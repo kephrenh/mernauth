@@ -41,6 +41,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
   const user = {
     _id: req.user._id,
     username: req.user.username,
+    fullName: req.user.fullName,
     email: req.user.email,
   };
   res.status(200).json(user);
@@ -51,12 +52,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
+    // Check username was entered
+    if (!fullName) {
+      return res.json({
+        error: "Full name is required",
+      });
+    }
     // Check username was entered
     if (!username) {
       return res.json({
-        error: "username is required",
+        error: "Username is required",
       });
     }
 
@@ -64,7 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const usernameExist = await User.findOne({ username });
     if (usernameExist) {
       return res.json({
-        error: "username is already taken.",
+        error: "Username is already taken.",
       });
     }
 
@@ -83,13 +90,14 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const user = await User.create({ username, email, password });
+    const user = await User.create({ fullName, username, email, password });
 
     if (user) {
       generateToken(res, user._id);
       res.status(201).json({
         _id: user._id,
         username: user.username,
+        fullName: user.fullName,
         email: user.email,
       });
     } else {
@@ -110,7 +118,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(id);
   if (user) {
     (user.username = req.body.username || user.username),
-      (user.name = req.body.name || user.name),
+      (user.fullName = req.body.fullName || user.fullName),
       (user.email = req.body.email || user.email);
 
     if (req.body.password) {
@@ -120,7 +128,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     res.status(200).json({
       _id: updatedUser._id,
       username: updatedUser.username,
-      name: updatedUser.name,
+      fullName: updatedUser.fullName,
       email: updatedUser.email,
     });
   } else {
