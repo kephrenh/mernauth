@@ -13,12 +13,15 @@ const authUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
     res.status(201).json({
-      success: `${user.username} is logged in.`,
+      _id: user._id,
+      username: user.username,
+      fullName: user.fullName,
+      email: user.email,
     });
   } else {
     res.status(401);
     return res.json({
-      error: "Invalid user or password",
+      message: "Invalid email or password",
     });
   }
 });
@@ -51,62 +54,51 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // route POST /api/users/auth
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  try {
-    const { fullName, username, email, password } = req.body;
+  const { fullName, username, email, password } = req.body;
 
-    // Check username was entered
-    if (!fullName) {
-      return res.json({
-        error: "Full name is required",
-      });
-    }
-    // Check username was entered
-    if (!username) {
-      return res.json({
-        error: "Username is required",
-      });
-    }
+  const userExists = await User.findOne({ email });
 
-    // Check if username exists
-    const usernameExist = await User.findOne({ username });
-    if (usernameExist) {
-      return res.json({
-        error: "Username is already taken.",
-      });
-    }
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
 
-    // Check if password was entered and has at least 6 characters
-    if (!password || password.length < 6) {
-      return res.json({
-        error: "Password is required and should be at least 6 characters",
-      });
-    }
+  if (!fullName) {
+    res.status(400);
+    throw new Error("Full Name is required");
+  }
+  if (!username) {
+    res.status(400);
+    throw new Error("Username is required");
+  }
+  if (!email) {
+    res.status(400);
+    throw new Error("Email is required");
+  }
+  if (!password || password.length < 6) {
+    res.status(400);
+    throw new Error("Password is required and must have at least 6 characters");
+  }
 
-    // Check if email exists
-    const emailExist = await User.findOne({ email });
-    if (emailExist) {
-      return res.json({
-        error: "Email is already registered.",
-      });
-    }
+  const user = await User.create({
+    fullName,
+    username,
+    email,
+    password,
+  });
 
-    const user = await User.create({ fullName, username, email, password });
+  if (user) {
+    generateToken(res, user._id);
 
-    if (user) {
-      generateToken(res, user._id);
-      res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        fullName: user.fullName,
-        email: user.email,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
-  } catch (error) {
-    res.status(500);
-    throw new Error(error.message);
+    res.status(201).json({
+      _id: user._id,
+      username: user.username,
+      fullName: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
   }
 });
 
@@ -130,6 +122,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       username: updatedUser.username,
       fullName: updatedUser.fullName,
       email: updatedUser.email,
+      message: "Data successfully updated",
     });
   } else {
     res.status(400);
