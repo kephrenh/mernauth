@@ -1,7 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Loader from "../components/Loader";
 import { setCredentials } from "../slices/authSlice";
@@ -43,6 +43,7 @@ const ProfileScreen = () => {
           password,
         }).unwrap();
         dispatch(setCredentials({ ...res }));
+        navigate("/");
         toast.success("Profile updated");
       } catch (err) {
         toast.error(err?.data?.message || err.error);
