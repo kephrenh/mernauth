@@ -1,9 +1,27 @@
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../slices/usersApiSlice";
+import { setCredentials } from "../slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const LoginScreen = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [navigate, userInfo]);
+
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -11,7 +29,15 @@ const LoginScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("submit");
+    try {
+      const res = await login(data).unwrap();
+      dispatch(setCredentials({ ...res }));
+      setData({});
+      navigate("/");
+    } catch (err) {
+      // console.error(err)
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -39,6 +65,7 @@ const LoginScreen = () => {
               value={data.password}
               onChange={(e) => setData({ ...data, password: e.target.value })}></Form.Control>
           </Form.Group>
+          {isLoading && <Loader />}
           <Button
             type="submit"
             variant="primary"
