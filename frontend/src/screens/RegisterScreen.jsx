@@ -22,9 +22,7 @@ const RegisterScreen = () => {
       <FormContainer>
         <h1>Sign Up</h1>
         <Form onSubmit={submitHandler}>
-          <Form.Group
-            className="my-2"
-            controlId="fullName">
+          <Form.Group className="my-2" controlId="fullName">
             <Form.Label>Full name</Form.Label>
             <Form.Control
               type="text"
@@ -33,20 +31,16 @@ const RegisterScreen = () => {
               onChange={(e) => setData({ ...data, fullName: e.target.value })}></Form.Control>
           </Form.Group>
 
-          <Form.Group
-            className="my-2"
-            controlId="username">
+          <Form.Group className="my-2" controlId="username">
             <Form.Label>Username</Form.Label>
             <Form.Control
-              type="username"
+              type="text"
               placeholder="Enter Username"
               value={data.username}
               onChange={(e) => setData({ ...data, username: e.target.value })}></Form.Control>
           </Form.Group>
 
-          <Form.Group
-            className="my-2"
-            controlId="email">
+          <Form.Group className="my-2" controlId="email">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
               type="email"
@@ -56,9 +50,7 @@ const RegisterScreen = () => {
               onChange={(e) => setData({ ...data, email: e.target.value })}></Form.Control>
           </Form.Group>
 
-          <Form.Group
-            className="my-2"
-            controlId="password">
+          <Form.Group className="my-2" controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
@@ -68,9 +60,7 @@ const RegisterScreen = () => {
               onChange={(e) => setData({ ...data, password: e.target.value })}></Form.Control>
           </Form.Group>
 
-          <Form.Group
-            className="my-2"
-            controlId="confirmPassword">
+          <Form.Group className="my-2" controlId="confirmPassword">
             <Form.Label>Confirm Password</Form.Label>
             <Form.Control
               type="password"
@@ -81,10 +71,7 @@ const RegisterScreen = () => {
                 setData({ ...data, confirmPassword: e.target.value })
               }></Form.Control>
           </Form.Group>
-          <Button
-            type="submit"
-            variant="primary"
-            className="mt-3">
+          <Button type="submit" variant="primary" className="mt-3">
             Sign Up
           </Button>
           <Row className="py-3">
