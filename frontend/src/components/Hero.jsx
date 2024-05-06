@@ -1,4 +1,5 @@
 import { Container, Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -12,14 +13,16 @@ const Hero = () => {
           </p>
           <div className="d-flex">
             <Button
+              as={Link}
               variant="primary"
-              href="/login"
+              to="/login"
               className="me-3">
               Sign In
             </Button>
             <Button
+              as={Link}
               variant="secondary"
-              href="/register">
+              to="/register">
               Sign Up
             </Button>
           </div>
